@@ -1,153 +1,153 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Coming soon</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#04080f">
+<meta name="color-scheme" content="dark">
+<meta name="format-detection" content="telephone=no">
+<title>lorn.lol - Make it yours.</title>
+<meta name="description" content="Create your own personalized space. Customize your profile, express yourself and make your presence unique.">
+<link rel="canonical" href="https://lorn.lol/">
 
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="lorn.lol">
+<meta property="og:url" content="https://lorn.lol/">
+<meta property="og:title" content="lorn.lol - Make it yours.">
+<meta property="og:description" content="Create your own personalized space. Customize your profile, express yourself and make your presence unique.">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="lorn.lol - Make it yours.">
+<meta name="twitter:description" content="Create your own personalized space. Customize your profile, express yourself and make your presence unique.">
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+    height: 100%;
+    background: #04080f;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 body {
-    height: 100vh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    display: grid;
+    place-items: center;
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #030914;
-    font-family: Inter, "Segoe UI", sans-serif;
-    color: #eaf4ff;
+    background: #04080f;
+    color: #eef4fc;
+    font-family: "Helvetica Neue", Inter, "Segoe UI", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
-/* Background */
-.background {
+.glow {
     position: fixed;
     inset: 0;
-    background:
-        radial-gradient(ellipse at 20% 20%, rgba(17, 73, 139, .25), transparent 55%),
-        radial-gradient(ellipse at 80% 75%, rgba(15, 53, 112, .3), transparent 55%),
-        linear-gradient(145deg, #050d1b, #07162b, #030914);
-    animation: ambient 12s ease-in-out infinite alternate;
+    pointer-events: none;
+    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(40, 90, 160, .18), transparent 70%);
+    animation: glow-in 2.4s cubic-bezier(.22, 1, .36, 1) both;
 }
 
-@keyframes ambient {
-    from { filter: brightness(.8); }
-    to { filter: brightness(1.3); }
+@keyframes glow-in {
+    from { opacity: 0; transform: scale(.6); }
+    to   { opacity: 1; transform: none; }
 }
 
-/* Glass panel */
-.glass {
+h1 {
     position: relative;
-    z-index: 1;
-    padding: 65px 90px;
-    border-radius: 24px;
-    background: rgba(14, 37, 67, .28);
-    border: 1px solid rgba(142, 190, 255, .12);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    box-shadow:
-        0 25px 80px rgba(0, 0, 0, .35),
-        inset 0 1px 1px rgba(255, 255, 255, .08),
-        0 0 80px rgba(24, 91, 173, .08);
-    animation: appear 1.2s cubic-bezier(.16, 1, .3, 1) both;
-}
-
-@keyframes appear {
-    from {
-        opacity: 0;
-        transform: translateY(20px) scale(.96);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Typing text */
-.typing {
-    font-size: clamp(32px, 5vw, 58px);
-    font-weight: 600;
-    letter-spacing: -2px;
     white-space: nowrap;
-    background: linear-gradient(120deg, #ffffff, #a9cfff, #e0edff);
-    background-clip: text;
+    font-size: clamp(30px, min(11vw, 20vh), 96px);
+    line-height: 1.1;
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    animation: reveal 1.4s cubic-bezier(.16, 1, .3, 1) .5s both;
+}
+
+.ghost { visibility: hidden; }
+
+.live {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.typed {
+    background: linear-gradient(180deg, #ffffff 30%, #9fbbe0);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
-    min-height: 1.2em;
 }
 
 .cursor {
     display: inline-block;
-    width: 3px;
-    height: .9em;
-    margin-left: 5px;
-    vertical-align: -2px;
-    background: #8fc5ff;
-    animation: blink .8s steps(2, start) infinite;
+    width: max(2px, .03em);
+    height: .85em;
+    margin-left: .06em;
+    vertical-align: -0.05em;
+    background: #b9d3f2;
+    animation: blink 1s ease-in-out infinite;
 }
 
 @keyframes blink {
-    to { visibility: hidden; }
+    0%, 45%   { opacity: 1; }
+    55%, 100% { opacity: 0; }
 }
 
-@media (max-width: 500px) {
-    .glass {
-        padding: 45px 30px;
-        border-radius: 18px;
-    }
+@keyframes reveal {
+    from { opacity: 0; filter: blur(10px); transform: translateY(14px) scale(.97); }
+    to   { opacity: 1; filter: blur(0);   transform: none; }
+}
 
-    .typing {
-        letter-spacing: -1px;
-    }
+/* Small phones: a touch more breathing room at the edges */
+@media (max-width: 360px) {
+    h1 { letter-spacing: -0.02em; }
+}
+
+/* Large / high-res screens */
+@media (min-width: 1600px) {
+    h1 { font-size: clamp(96px, min(6vw, 20vh), 140px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .glow, h1 { animation: none; }
 }
 </style>
 </head>
-
 <body>
-
-<div class="background"></div>
-
-<main class="glass">
-    <div class="typing">
-        <span id="typed"></span><span class="cursor"></span>
-    </div>
-</main>
-
+<div class="glow"></div>
+<h1 aria-label="Coming soon">
+    <span class="ghost" aria-hidden="true">Coming soon</span>
+    <span class="live" aria-hidden="true"><span class="typed" id="typed"></span><span class="cursor"></span></span>
+</h1>
 <script>
 const text = "Coming soon";
-const element = document.getElementById("typed");
+const el = document.getElementById("typed");
+const PAUSE = 1500;
+let i = 0, deleting = false;
 
-let index = 0;
-let deleting = false;
-
-function typeLoop() {
-    element.textContent = text.substring(0, index);
-
-    if (!deleting && index < text.length) {
-        index++;
-        setTimeout(typeLoop, 120);
-    } 
-    else if (!deleting && index === text.length) {
-        deleting = true;
-        setTimeout(typeLoop, 1800);
-    } 
-    else if (deleting && index > 0) {
-        index--;
-        setTimeout(typeLoop, 75);
-    } 
-    else {
-        deleting = false;
-        setTimeout(typeLoop, 600);
+function tick() {
+    el.textContent = text.slice(0, i);
+    if (!deleting) {
+        if (i < text.length) { i++; setTimeout(tick, 90 + Math.random() * 50); }
+        else { deleting = true; setTimeout(tick, PAUSE); }
+    } else {
+        if (i > 0) { i--; setTimeout(tick, 45); }
+        else { deleting = false; setTimeout(tick, PAUSE); }
     }
 }
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+setTimeout(tick, reduced ? 0 : 1300);
 
-typeLoop();
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("selectstart", e => e.preventDefault());
+document.addEventListener("dragstart", e => e.preventDefault());
 </script>
-
 </body>
 </html>
