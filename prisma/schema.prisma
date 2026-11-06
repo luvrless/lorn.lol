@@ -1,0 +1,813 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  PREMIUM
+  MODERATOR
+  ADMIN
+  OWNER
+}
+
+enum ProfileVisibility {
+  PUBLIC
+  PRIVATE
+  UNLISTED
+}
+
+enum BackgroundType {
+  IMAGE
+  VIDEO
+  SHADER
+  GRADIENT
+  SOLID
+  PARTICLES
+  AURORA
+  GALAXY
+  STARS
+  LIQUID
+  SILK
+  CLOUDS
+  LIGHTNING
+  PLASMA
+  IRIDESCENCE
+  DITHER
+  CRT
+  LIGHT_RAYS
+  SNOWFALL
+  RAIN
+  ANIMATED_GRADIENT
+  CUSTOM_SHADER
+}
+
+enum BadgeRarity {
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
+  MYTHIC
+}
+
+enum BadgeCategory {
+  VERIFIED
+  PREMIUM
+  STAFF
+  DEVELOPER
+  FOUNDER
+  EARLY_SUPPORTER
+  DONATOR
+  COMMUNITY
+  HELPER
+  EVENT
+  MILESTONE
+  SPECIAL
+  CUSTOM
+}
+
+enum WidgetType {
+  ABOUT_ME
+  PERSONAL_INFO
+  LANGUAGES
+  LOCATION
+  SKILLS
+  PROJECTS
+  CUSTOM_TEXT
+  MY_GAMES
+  GAMING_SETUP
+  HARDWARE
+  GAME_SETTINGS
+  CROSSHAIR_SETTINGS
+  GAMING_STATS
+  GAME_COLLECTIONS
+  IMAGE_GALLERY
+  VIDEO_GALLERY
+  CLIPS
+  MUSIC_COLLECTION
+  EMBEDDED_MEDIA
+  MUSIC_PLAYER
+  DISCORD
+  DISCORD_SERVER
+  ROBLOX
+  STEAM
+  YOUTUBE
+  TWITCH
+  GITHUB
+  SPOTIFY
+  CALENDAR
+  COUNTDOWN
+  TIMEZONE
+  WEATHER
+  CLOCK
+  CUSTOM_LIST
+  CUSTOM_INFO_ROWS
+}
+
+enum PageLayout {
+  MAGAZINE
+  DECK
+  STACK
+  WALL
+  SPINE
+  COLLAGE
+  FLOW
+  GRID
+}
+
+enum LinkVisibility {
+  VISIBLE
+  HIDDEN
+  FEATURED
+  ICON_ONLY
+}
+
+enum TemplateVisibility {
+  PUBLIC
+  PRIVATE
+  UNLISTED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  TRIALING
+  INCOMPLETE
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWING
+  RESOLVED
+  DISMISSED
+}
+
+enum ReportType {
+  SPAM
+  HARASSMENT
+  IMPERSONATION
+  INAPPROPRIATE_CONTENT
+  COPYRIGHT
+  OTHER
+}
+
+model User {
+  id                    String    @id @default(cuid())
+  email                 String?   @unique
+  emailVerified         DateTime?
+  username              String    @unique
+  displayName           String?
+  passwordHash          String?
+  avatarUrl             String?
+  bannerUrl             String?
+  bio                   String?   @db.Text
+  location              String?
+  languages             String[]
+  joinedDate            DateTime  @default(now())
+  showJoinedDate        Boolean   @default(true)
+  role                  UserRole  @default(USER)
+  isActive              Boolean   @default(true)
+  isBanned              Boolean   @default(false)
+  banReason             String?
+  bannedAt              DateTime?
+  bannedBy              String?
+  twoFactorEnabled      Boolean   @default(false)
+  twoFactorSecret       String?
+  backupCodes           String[]
+  lastLoginAt           DateTime?
+  lastLoginIp           String?
+  failedLoginAttempts   Int       @default(0)
+  lockedUntil           DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  deletedAt             DateTime?
+
+  accounts              Account[]
+  sessions              Session[]
+  profile               Profile?
+  draftProfile          DraftProfile?
+  assets                Asset[]
+  folders               AssetFolder[]
+  links                 SocialLink[]
+  pages                 Page[]
+  widgets               Widget[]
+  music                 MusicTrack[]
+  badges                UserBadge[]
+  templates             Template[]
+  favorites             FavoriteTemplate[]
+  integrations          UserIntegration[]
+  analytics             AnalyticsEvent[]
+  analyticsSummaries    AnalyticsSummary[]
+  subscriptions         Subscription[]
+  purchases             Purchase[]
+  reports               Report[]       @relation("UserReports")
+  assignedReports       Report[]       @relation("AssignedReports")
+  auditLogs             AuditLog[]
+  notifications         Notification[]
+  supportTickets        SupportTicket[]
+  apiKeys               ApiKey[]
+  referredBy            String?
+  referralCode          String       @unique @default(cuid())
+  referralCount         Int          @default(0)
+  premiumExpiresAt      DateTime?
+  stripeCustomerId      String?
+  stripeSubscriptionId  String?
+
+  @@index([email])
+  @@index([username])
+  @@index([referralCode])
+  @@index([role])
+  @@index([isActive, isBanned])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  ipAddress    String?
+  userAgent    String?
+  deviceInfo   String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expires])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Profile {
+  id                    String           @id @default(cuid())
+  userId                String           @unique
+  username              String           @unique
+  displayName           String?
+  bio                   String?          @db.Text
+  avatarUrl             String?
+  bannerUrl             String?
+  location              String?
+  languages             String[]
+  showJoinedDate        Boolean          @default(true)
+  profileStatus         String?
+  visibility            ProfileVisibility @default(PUBLIC)
+  allowIndexing         Boolean          @default(true)
+  description           String?          @db.Text
+  viewCount             BigInt           @default(0)
+  uniqueVisitors        BigInt           @default(0)
+  linkClicks            BigInt           @default(0)
+  completionScore       Int              @default(0)
+  publishedAt           DateTime?
+  version               Int              @default(1)
+  backgroundConfig      Json?
+  cardConfig            Json?
+  textConfig            Json?
+  cursorConfig          Json?
+  overlayConfig         Json?
+  animationConfig       Json?
+  enterScreenConfig     Json?
+  seoConfig             Json?
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([username])
+  @@index([userId])
+  @@index([visibility])
+  @@index([publishedAt])
+}
+
+model DraftProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  username          String?
+  displayName       String?
+  bio               String?  @db.Text
+  avatarUrl         String?
+  bannerUrl         String?
+  location          String?
+  languages         String[]
+  showJoinedDate    Boolean  @default(true)
+  profileStatus     String?
+  visibility        ProfileVisibility @default(PUBLIC)
+  allowIndexing     Boolean  @default(true)
+  description       String?  @db.Text
+  backgroundConfig  Json?
+  cardConfig        Json?
+  textConfig        Json?
+  cursorConfig      Json?
+  overlayConfig     Json?
+  animationConfig   Json?
+  enterScreenConfig Json?
+  seoConfig         Json?
+  version           Int      @default(1)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Asset {
+  id              String   @id @default(cuid())
+  userId          String
+  folderId        String?
+  filename        String
+  originalName    String
+  mimeType        String
+  size            BigInt
+  width           Int?
+  height          Int?
+  duration        Float?
+  url             String
+  thumbnailUrl    String?
+  blurhash        String?
+  category        String
+  tags            String[]
+  isPublic        Boolean  @default(false)
+  downloadCount   Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folder AssetFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([folderId])
+  @@index([category])
+  @@index([createdAt])
+}
+
+model AssetFolder {
+  id        String       @id @default(cuid())
+  userId    String
+  name      String
+  parentId  String?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent   AssetFolder? @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children AssetFolder[] @relation("FolderHierarchy")
+  assets   Asset[]
+
+  @@index([userId])
+  @@index([parentId])
+}
+
+model SocialLink {
+  id            String         @id @default(cuid())
+  userId        String
+  platform      String
+  customPlatform String?
+  label         String
+  url           String
+  description   String?
+  iconUrl       String?
+  iconColor     String?
+  isMonochrome  Boolean        @default(false)
+  visibility    LinkVisibility @default(VISIBLE)
+  isFeatured    Boolean        @default(false)
+  order         Int            @default(0)
+  clickCount    BigInt         @default(0)
+  uniqueClicks  BigInt         @default(0)
+  startDate     DateTime?
+  endDate       DateTime?
+  section       String?
+  isArchived    Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([platform])
+  @@index([order])
+  @@index([visibility])
+}
+
+model Page {
+  id              String      @id @default(cuid())
+  userId          String
+  title           String
+  description     String?     @db.Text
+  slug            String
+  layout          PageLayout  @default(GRID)
+  backgroundConfig Json?
+  isPublished     Boolean     @default(false)
+  order           Int         @default(0)
+  viewCount       BigInt      @default(0)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  widgets Widget[]
+
+  @@unique([userId, slug])
+  @@index([userId])
+  @@index([isPublished])
+}
+
+model Widget {
+  id            String     @id @default(cuid())
+  userId        String
+  pageId        String?
+  type          WidgetType
+  title         String?
+  config        Json
+  style         Json?
+  isVisible     Boolean    @default(true)
+  isEnabled     Boolean    @default(true)
+  order         Int        @default(0)
+  width         Int        @default(12)
+  height        Int        @default(6)
+  x             Int        @default(0)
+  y             Int        @default(0)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  page Page? @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([pageId])
+  @@index([type])
+  @@index([order])
+}
+
+model MusicTrack {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  artist      String
+  album       String?
+  audioUrl    String
+  coverUrl    String?
+  duration    Int
+  lyrics      String?  @db.Text
+  syncedLyrics Json?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  playCount   BigInt   @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([order])
+}
+
+model UserIntegration {
+  id            String   @id @default(cuid())
+  userId        String
+  platform      String
+  accessToken   String?  @db.Text
+  refreshToken  String?  @db.Text
+  expiresAt     DateTime?
+  scope         String?
+  profileData   Json?
+  isConnected   Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  lastSyncAt    DateTime?
+  errorMessage  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, platform])
+  @@index([userId])
+  @@index([platform])
+}
+
+model Badge {
+  id              String       @id @default(cuid())
+  name            String
+  slug            String       @unique
+  description     String       @db.Text
+  iconUrl         String
+  color           String       @default("#6366f1")
+  glowColor       String?
+  rarity          BadgeRarity  @default(COMMON)
+  category        BadgeCategory @default(CUSTOM)
+  isAnimated      Boolean      @default(false)
+  animationConfig Json?
+  requirement     String?      @db.Text
+  isAutoAward     Boolean      @default(false)
+  isHidden        Boolean      @default(false)
+  maxOwners       Int?
+  sortOrder       Int          @default(0)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  owners UserBadge[]
+
+  @@index([slug])
+  @@index([category])
+  @@index([rarity])
+  @@index([isAutoAward])
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  badgeId   String
+  awardedAt DateTime @default(now())
+  awardedBy String?
+  isVisible Boolean  @default(true)
+  order     Int      @default(0)
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@index([userId])
+  @@index([badgeId])
+  @@index([awardedAt])
+}
+
+model Template {
+  id              String            @id @default(cuid())
+  userId          String
+  name            String
+  description     String?           @db.Text
+  previewImageUrl String?
+  visibility      TemplateVisibility @default(PRIVATE)
+  config          Json
+  tags            String[]
+  category        String?
+  useCount        Int               @default(0)
+  favoriteCount   Int               @default(0)
+  isFeatured      Boolean           @default(false)
+  isApproved      Boolean           @default(false)
+  approvedAt      DateTime?
+  approvedBy      String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  favorites FavoriteTemplate[]
+
+  @@index([userId])
+  @@index([visibility])
+  @@index([category])
+  @@index([isFeatured])
+  @@index([isApproved])
+}
+
+model FavoriteTemplate {
+  id         String   @id @default(cuid())
+  userId     String
+  templateId String
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, templateId])
+  @@index([userId])
+  @@index([templateId])
+}
+
+model AnalyticsEvent {
+  id          String   @id @default(cuid())
+  userId      String
+  profileId   String?
+  eventType   String
+  eventData   Json?
+  ipAddress   String?
+  userAgent   String?
+  referrer    String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  country     String?
+  deviceType  String?
+  browser     String?
+  os          String?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([profileId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@index([country])
+  @@index([deviceType])
+}
+
+model AnalyticsSummary {
+  id            String   @id @default(cuid())
+  userId        String
+  date          DateTime @db.Date
+  profileViews  BigInt   @default(0)
+  uniqueVisitors BigInt  @default(0)
+  linkClicks    BigInt   @default(0)
+  uniqueClicks  BigInt   @default(0)
+  musicPlays    BigInt   @default(0)
+  topLinks      Json?
+  topReferrers  Json?
+  topCountries  Json?
+  topDevices    Json?
+  topBrowsers   Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  userId               String
+  stripeSubscriptionId String?            @unique
+  stripePriceId        String?
+  status               SubscriptionStatus @default(INCOMPLETE)
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean            @default(false)
+  cancelledAt          DateTime?
+  trialStart           DateTime?
+  trialEnd             DateTime?
+  metadata             Json?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([stripeSubscriptionId])
+  @@index([status])
+}
+
+model Purchase {
+  id              String   @id @default(cuid())
+  userId          String
+  stripePaymentId String?  @unique
+  amount          Int
+  currency        String   @default("usd")
+  description     String
+  status          String
+  metadata        Json?
+  createdAt       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([stripePaymentId])
+  @@index([createdAt])
+}
+
+model Report {
+  id          String       @id @default(cuid())
+  reporterId  String
+  targetId    String
+  targetType  String
+  type        ReportType
+  reason      String       @db.Text
+  evidence    Json?
+  status      ReportStatus @default(PENDING)
+  assignedTo  String?
+  reviewedAt  DateTime?
+  reviewedBy  String?
+  resolution  String?      @db.Text
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  reporter User @relation("UserReports", fields: [reporterId], references: [id], onDelete: Cascade)
+  assignee User? @relation("AssignedReports", fields: [assignedTo], references: [id], onDelete: SetNull)
+
+  @@index([reporterId])
+  @@index([targetId, targetType])
+  @@index([status])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  message   String   @db.Text
+  data      Json?
+  isRead    Boolean  @default(false)
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+model SupportTicket {
+  id        String   @id @default(cuid())
+  userId    String
+  subject   String
+  message   String   @db.Text
+  status    String   @default("OPEN")
+  priority  String   @default("NORMAL")
+  assignedTo String?
+  response  String?  @db.Text
+  respondedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([assignedTo])
+}
+
+model ApiKey {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  keyHash     String
+  keyPrefix   String
+  permissions String[]
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([keyHash])
+  @@index([isActive])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  targetType String
+  targetId  String?
+  oldData   Json?
+  newData   Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([action])
+  @@index([targetType, targetId])
+  @@index([createdAt])
+}
+
+model SystemConfig {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       Json
+  description String?
+  updatedAt   DateTime @updatedAt
+}

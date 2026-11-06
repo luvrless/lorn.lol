@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"C:\\\\Users\\\\jay2r\\\\OneDrive\\\\Documents\\\\lorn.lol-website\\\\src\\\\app\\\\api\\\\auth\\\\[...nextauth]\" \"C:\\\\Users\\\\jay2r\\\\OneDrive\\\\Documents\\\\lorn.lol-website\\\\src\\\\app\\\\api\\\\user\" \"C:\\\\Users\\\\jay2r\\\\OneDrive\\\\Documents\\\\lorn.lol-website\\\\src\\\\app\\\\api\\\\profile\" \"C:\\\\Users\\\\jay2r\\\\OneDrive\\\\Documents\\\\lorn.lol-website\\\\src\\\\app\\\\api\\\\links\" \"C:\\\\Users\\\\jay2r\\\\OneDrive\\\\Documents\\\\lorn.lol-website\\\\src\\\\app\\\\api\\\\pages\" \"C:\\\\Users\\\\jay2r\\\\OneDrive\\\\Documents\\\\lorn.lol-website\\\\src\\\\app\\\\api\\\\widgets\" \"C:\\\\Users\\\\jay2r\\\\OneDrive\\\\Documents\\\\lorn.lol-website\\\\src\\\\app\\\\api\\\\media\" \"C:\\\\Users\\\\jay2r\\\\OneDrive\\\\Documents\\\\lorn.lol-website\\\\src\\\\app\\\\api\\\\music\" \"C:\\\\Users\\\\jay2r\\\\OneDrive\\\\Documents\\\\lorn.lol-website\\\\src\\\\app\\\\api\\\\badges\" \"C:\\\\Users\\\\jay2r\\\\OneDrive\\\\Documents\\\\lorn.lol-website\\\\src\\\\app\\\\api\\\\templates\" \"C:\\\\Users\\\\jay2r\\\\OneDrive\\\\Documents\\\\lorn.lol-website\\\\src\\\\app\\\\api\\\\integrations\" \"C:\\\\Users\\\\jay2r\\\\OneDrive\\\\Documents\\\\lorn.lol-website\\\\src\\\\app\\\\api\\\\analytics\" \"C:\\\\Users\\\\jay2r\\\\OneDrive\\\\Documents\\\\lorn.lol-website\\\\src\\\\app\\\\api\\\\admin\" \"C:\\\\Users\\\\jay2r\\\\OneDrive\\\\Documents\\\\lorn.lol-website\\\\src\\\\app\\\\api\\\\bot\")"
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NEXTAUTH_URL = "https://lorn.lol"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "https://lorn.lol"
+    Access-Control-Allow-Methods = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
