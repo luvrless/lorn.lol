@@ -22,6 +22,7 @@ const jetBrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://lorn.lol'),
   title: {
     default: 'LORN.LOL — Your Digital Identity',
     template: '%s | LORN.LOL',

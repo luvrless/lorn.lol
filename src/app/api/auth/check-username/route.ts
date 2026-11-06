@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { isValidUsername } from '@/lib/utils'
 
+export const dynamic = 'force-dynamic'
+
 const RESERVED_USERNAMES = [
   'admin', 'administrator', 'root', 'system', 'api', 'www', 'mail', 'ftp',
   'blog', 'shop', 'store', 'app', 'dev', 'test', 'staging', 'prod',

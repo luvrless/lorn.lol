@@ -100,11 +100,11 @@ export default function OverviewPage() {
           </Button>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button asChild variant="default">
-                <Link href={`/lorn.lol/${session?.user?.username}`} target="_blank" rel="noopener noreferrer">
+              <Button asChild variant="default" className="bg-purple-600 hover:bg-purple-500 text-white">
+                <a href={session?.user?.username ? `https://lorn.lol/${session.user.username}` : '#'} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="w-4 h-4 mr-2" />
                   View Profile
-                </Link>
+                </a>
               </Button>
             </TooltipTrigger>
             <TooltipContent>Open your public profile</TooltipContent>

@@ -3,6 +3,9 @@ import type { NextRequest } from 'next/server'
 
 const publicRoutes = [
   '/',
+  '/signin',
+  '/signup',
+  '/error',
   '/auth/signin',
   '/auth/signup',
   '/auth/error',
@@ -53,7 +56,7 @@ export function middleware(request: NextRequest) {
 
   // Dashboard route check
   if (isDashboardRoute && !isLoggedIn) {
-    const signInUrl = new URL('/auth/signin', nextUrl)
+    const signInUrl = new URL('/signin', nextUrl)
     signInUrl.searchParams.set('callbackUrl', nextUrl.pathname)
     return NextResponse.redirect(signInUrl)
   }
