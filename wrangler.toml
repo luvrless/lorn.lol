@@ -1,7 +1,6 @@
 name = "lorn-lol"
-compatibility_date = "2024-01-01"
+compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
-pages_build_output_dir = ".vercel/output/static"
 
-[vars]
-NEXTAUTH_URL = "https://lorn.lol"
+# This is used by Cloudflare Pages
+pages_build_output_dir = ".vercel/output/static"
